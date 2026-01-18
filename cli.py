@@ -4,6 +4,7 @@ from utils.logger import setup_logger
 
 logger = setup_logger("cli")
 
+
 def main():
     parser = argparse.ArgumentParser(description=f"{config.get('app_name')} CLI")
     parser.add_argument("--query", "-q", type=str, help="Query for the agent")
@@ -17,6 +18,7 @@ def main():
     else:
         logger.warning("No query provided")
         parser.print_help()
+
 
 if __name__ == "__main__":
     main()

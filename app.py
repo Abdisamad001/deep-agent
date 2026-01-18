@@ -1,9 +1,8 @@
 import streamlit as st
 import os
 from dotenv import load_dotenv
-from typing import Literal
-from tavily import TavilyClient
 from langchain.chat_models import init_chat_model
+from langchain_community.tools.tavily_search import TavilySearchResults
 from deepagents import create_deep_agent
 from config.settings import config
 from utils.logger import setup_logger
@@ -13,12 +12,14 @@ load_dotenv()
 
 logger = setup_logger("streamlit_app")
 
-st.set_page_config(page_title=config.get("app_name", "Deep Agent"), page_icon="🤖", layout="wide")
+st.set_page_config(
+    page_title=config.get("app_name", "Deep Agent"), page_icon="🤖", layout="wide"
+)
 
 st.title("🤖 Deep Agent Experiment")
 
 # --- Utility Functions ---
-from langchain_community.tools.tavily_search import TavilySearchResults
+
 
 def get_search_tool():
     """Create and return the Tavily search tool"""
@@ -31,6 +32,7 @@ def get_search_tool():
         # API key is automatically read from TAVILY_API_KEY env var by this tool
     )
 
+
 # --- Sidebar Configuration ---
 st.sidebar.header("Configuration")
 
@@ -42,7 +44,7 @@ model_options = [
     "groq:llama3-70b-8192",
     "groq:mixtral-8x7b-32768",
     "openai:gpt-4o",
-    "openai:gpt-3.5-turbo"
+    "openai:gpt-3.5-turbo",
 ]
 
 selected_model = st.sidebar.selectbox("Select Model", model_options, index=0)
@@ -93,17 +95,20 @@ if user_input:
                 agent = create_deep_agent(
                     model=llm,
                     tools=[search_tool],
-                    system_prompt="You are a helpful and capable research assistant. Use the search tool when necessary to get current information."
+                    system_prompt=(
+                        "You are a helpful and capable research assistant. "
+                        "Use the search tool when necessary to get current information."
+                    ),
                 )
 
                 # 3. Invoke Agent
-                # Passing the conversation history + new message could be better, 
+                # Passing the conversation history + new message could be better,
                 # but currently just passing the new prompt to allow the agent to process it.
                 # deep-agent invoke structure:
                 payload = {"messages": [{"role": "user", "content": user_input}]}
-                
+
                 result = agent.invoke(payload)
-                
+
                 # 4. Extract and show response
                 # Assuming the last message is the final answer
                 if "messages" in result and len(result["messages"]) > 0:
@@ -112,7 +117,9 @@ if user_input:
                     response_content = "No response generated."
 
                 st.write(response_content)
-                st.session_state.messages.append({"role": "assistant", "content": response_content})
+                st.session_state.messages.append(
+                    {"role": "assistant", "content": response_content}
+                )
 
             except Exception as e:
                 logger.error(f"Error running agent: {e}", exc_info=True)
