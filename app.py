@@ -104,7 +104,7 @@ if user_input:
                 # Passing the conversation history + new message could be better,
                 # but currently just passing the new prompt to allow the agent to process it.
                 # deep-agent invoke structure:
-                
+
                 payload = {"messages": [{"role": "user", "content": user_input}]}
 
                 result = agent.invoke(payload)
