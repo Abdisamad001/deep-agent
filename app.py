@@ -29,7 +29,7 @@ def get_search_tool():
         include_answer=True,
         include_raw_content=False,
         include_images=False,
-        # API key is automatically read from TAVILY_API_KEY env var by this tool
+        # API key is automatically read from TAVILY_API_KEY env
     )
 
 
@@ -87,7 +87,6 @@ if user_input:
         with st.spinner(f"Agent is thinking using {selected_model}..."):
             try:
                 # 1. Initialize Model
-                # Note: 'groq:...' prefix works if langchain-groq is installed and recognized by init_chat_model
                 llm = init_chat_model(selected_model)
 
                 # 2. Create Deep Agent
@@ -105,6 +104,7 @@ if user_input:
                 # Passing the conversation history + new message could be better,
                 # but currently just passing the new prompt to allow the agent to process it.
                 # deep-agent invoke structure:
+                
                 payload = {"messages": [{"role": "user", "content": user_input}]}
 
                 result = agent.invoke(payload)
